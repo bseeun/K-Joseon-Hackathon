@@ -41,6 +41,12 @@ if "active_chat" not in st.session_state:
     st.session_state.active_chat = None
 if "show_upload" not in st.session_state:
     st.session_state.show_upload = False
+if "language" not in st.session_state:
+    st.session_state.language = "한국어"
+if "role" not in st.session_state:
+    st.session_state.role = "3등 기관사"
+if "show_settings" not in st.session_state:
+    st.session_state.show_settings = False
 
 
 def _new_chat() -> str:
@@ -144,13 +150,60 @@ def _upload_dialog_body():
                         pass
 
 
+def _settings_dialog():
+    """언어 및 직급 설정 다이얼로그"""
+    st.subheader("설정")
+    
+    languages = ["한국어", "영어", "중국어", "일본어"]
+    roles = ["3등 기관사", "2등 기관사", "1등 기관사", "기관장"]
+    
+    language = st.selectbox(
+        "언어 선택",
+        options=languages,
+        index=languages.index(st.session_state.language) if st.session_state.language in languages else 0,
+        key="settings_language"
+    )
+    
+    role = st.selectbox(
+        "직급 선택",
+        options=roles,
+        index=roles.index(st.session_state.role) if st.session_state.role in roles else 0,
+        key="settings_role"
+    )
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("적용", type="primary", use_container_width=True):
+            st.session_state.language = language
+            st.session_state.role = role
+            st.session_state.show_settings = False
+    
+    with col2:
+        if st.button("닫기", use_container_width=True):
+            st.session_state.show_settings = False
+
+
 def _topbar_upload_button():
-    col1, col2, col3 = st.columns([1, 6, 1])
-    with col3:
+    col1, col_upload, col_setting = st.columns([1, 0.2, 0.15])
+    with col_upload:
         if st.button("소스 업로드", disabled=not _has_api_key()):
             st.session_state.show_upload = True
         if not _has_api_key():
             st.caption("API 키가 없으면 업로드/인덱싱을 사용할 수 없습니다.")
+    with col_setting:
+        if st.button("⚙️ 설정", disabled=not _has_api_key(), use_container_width=True):
+            st.session_state.show_settings = True
+    
+    # Settings dialog
+    if st.session_state.show_settings:
+        try:
+            @st.dialog("설정", width="medium")
+            def _dlg():
+                _settings_dialog()
+            _dlg()
+        except Exception:
+            with st.expander("설정", expanded=True):
+                _settings_dialog()
 
     # Modal/dialog (Streamlit 1.32+: st.dialog)
     if st.session_state.show_upload:
@@ -185,12 +238,30 @@ def _chat_body():
         else:
             with st.chat_message("assistant"):
                 st.markdown(msg["content"])
+                
+                # 이미지 표시 (히스토리)
+                images = msg.get("images", [])
+                if images:
+                    st.markdown("#### 관련 이미지")
+                    for img_data in images:
+                        st.caption(f"{img_data['title']} (페이지 {img_data['page']})")
+                        try:
+                            from PIL import Image
+                            import io
+                            img = Image.open(io.BytesIO(img_data["image_bytes"]))
+                            st.image(img, use_container_width=True)
+                        except Exception:
+                            st.caption("이미지 로드 실패")
+                
                 cites = msg.get("citations") or []
                 if cites:
-                    st.caption(
-                        "출처: "
-                        + ", ".join([f"{c['title']} (p.{c['page']})" for c in cites])
-                    )
+                    cite_texts = []
+                    for c in cites:
+                        cite_text = f"{c['title']} (p.{c['page']})"
+                        if c.get("has_image", False):
+                            cite_text += " 📷"
+                        cite_texts.append(cite_text)
+                    st.caption("출처: " + ", ".join(cite_texts))
 
     if not _has_api_key():
         st.info("OPENAI_API_KEY 설정 후 채팅을 이용할 수 있습니다.")
@@ -211,19 +282,40 @@ def _chat_body():
         )
         with st.chat_message("assistant"):
             with st.spinner("검색 중…"):
-                res = rag_answer(prompt, top_k=5)
+                res = rag_answer(
+                    prompt, 
+                    top_k=5,
+                    language=st.session_state.language,
+                    role=st.session_state.role
+                )
                 answer_text = res.get("answer", "")
                 citations = res.get("citations", [])
                 st.markdown(answer_text)
+                
+                # 이미지 표시
+                images = res.get("images", [])
+                if images:
+                    st.markdown("#### 관련 이미지")
+                    for img_data in images:
+                        st.caption(f"{img_data['title']} (페이지 {img_data['page']})")
+                        try:
+                            from PIL import Image
+                            import io
+                            img = Image.open(io.BytesIO(img_data["image_bytes"]))
+                            st.image(img, use_container_width=True)
+                        except Exception:
+                            st.caption("이미지 로드 실패")
+                
                 if citations:
-                    st.caption(
-                        "출처: "
-                        + ", ".join(
-                            [f"{c['title']} (p.{c['page']})" for c in citations]
-                        )
-                    )
+                    cite_texts = []
+                    for c in citations:
+                        cite_text = f"{c['title']} (p.{c['page']})"
+                        if c.get("has_image", False):
+                            cite_text += " 📷"
+                        cite_texts.append(cite_text)
+                    st.caption("출처: " + ", ".join(cite_texts))
         st.session_state.conversations[st.session_state.active_chat].append(
-            {"role": "assistant", "content": answer_text, "citations": citations}
+            {"role": "assistant", "content": answer_text, "citations": citations, "images": res.get("images", [])}
         )
 
 

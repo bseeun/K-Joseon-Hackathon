@@ -1,0 +1,218 @@
+[
+  {
+    "header": "0.   조수기 작동원리",
+    "content": "조수기는 기본적으로 해수를 끓여 이 수증기를 냉각시켜 물을 만드는 기기이다. 그런데 이 물을 어떻게 끓여 수증기를 만들고 냉각시켜 물을 만드느냐가 조수기의 성능을 좌우하게 된다. 우리들이 일상적으로 생활하는 공간의 압력을 대기압이라고 하는데, 이 대기압에서 물이 끓는 온도는 100℃이다. 이와 같이 100℃에서 물을 끓이는데 많은 열이 필요하나 선박에서는 이 열을 기관을 냉각하고 나오는 냉각수의 폐열을 이용하고 있다. 그런데 대부분의 주기관 냉각수 출구 온도는 85℃ 이하이므로대기압하에서 물을 끓이는데 부족한 열이다. 그러므로 기관의 냉각수 폐열을 이용하여 물을 낮은 온도에서 끓이기 위해서는 압력을 대기압보다 낮게 즉 진공 상태를 유지하면 쉽게 증발시킬 수 있다는 것을 알 수 있다.[IMAGE]1) Heat ExchangerM/E Jacket Cooling F.W의 폐열을 이용하여 해수를 가열하는 장치로써 일반적으로 약 75℃ ~ 85℃정도로 가열한다. Heating Tube 해수측에 Scale이 부착되므로 주기적으로 약품소제를 하여야 한다.2) CondenserHeat Exchanger에 의하여 증발된 수증기를 해수로 냉각시켜 응축수로 만드는장치로써, 응축수가 정상적으로 이동되지 않아 Condenser Tube가 잠길 정도로되면 전열효율이 나빠지므로 주기적으로 Level을 확인할 필요가 있다.3) Water Ejector조수장치 내부를 진공으로 만들기 위한 장치로써 Heat Exchanger에 의하여 증발되고 남은 농축해수(Brine)도 같이 배출한다.4) Ejector Pump해수를 Water Ejector로 공급하는 장치5) Distillate Pump응축된 증류수를 청수탱크로 이송하는 장치6) DeflectorHeat Exchanger 바로 위에 설치되어 과도하게 비등하는 해수가 수증기와 함께바로 Condenser로 올라가지 못하도록 하는 장치로써  주로 FRP(FiberReinforced Plastic) 재질로 되어 있으므로 소제 또는 수리 시 주의하여야 한다7) Mesh SeparatorHeat Exchanger에서 증발한 Vapour중 수증기만 통과할 수 있도록 Filtering하는 장치로써 Stainless Steel or Copper로 만들어진다.8)   Solenoid ValveDistillate Pump로 증류수를 이송 중 증류수 염도가 상승하면 이 밸브가 작동하여 염도가 높은 증류수를 Evaporator Shell로 되돌려 보내는 장치9)   Salinity IndicatorCollector에 고인 증류수를 증류수 펌프를 이용하여 증류수 탱크로 보낼 때에증류수의 염도를 검사하는 장치이다.생산된 증류수의 염도가 Setting Value보다 높으면 Chamber로 되돌려 보내거나        빌지로 배출하는 역할을 한다.◆  K-Type : Condenser 냉각해수 Line이 별도로 되어 있으며, Ejector Pump로Pumping하는 장치내의 진공을 형성시키는 Ejector를 작동시킨다.◆  KM-Type : Condenser를 통과한 냉각해수의 일부를 Ejector Pump로 Pumping하여 Ejector를 통과시켜 장치의 진공을 형성시킨다.◆  KE-Type : Ejector Pump로 Pumping하여 Ejector 및 Condenser로 공급하는 형식임.",
+    "start_page": 1,
+    "type": "section",
+    "has_image": true,
+    "id": "chunk-1"
+  },
+  {
+    "header": "3.   조수기 운전 및 정지 - 3-1.  Starting up (KE Type)",
+    "content": "1)   조수기를 운전하기 전에 다음 밸브는 Close되어 있어야 한다.◆  Heat Exchanger의 Jacket Cool. Water용 입.출구 밸브◆  Vacuum Breaker Valve◆  Distillate Pump의 출구변◆  Heat Exchanger의 Feed Water 입구변◆  Bottom Blow Valve2)   Ejector Pump의 입출구 밸브 및 Overboard valve를 열고 Ejector Pump를 기동한다. 진공이 형성되기 시작한다.만일 진공형성이 불량할 경우 Non-return v/v의 상태를 확인한다.3)   Condenser 냉각해수 입출구 밸브를 열어 냉각수량을 조절한다.4)   Heat Exchanger의 Feed Water 입구변을 Open한다.Feed Water 압력을 Pressure Gauge의 Green belt 영역 내로 유지한다.5)   진공이 약 700mmHg가 되면 Heat Exchanger Jacket Cool. Water 용 입.출구 발브를 Open한다. 밸브의 조작법은 다음과 같다.◆  Jacket Cool. Water 입구변은 기존의 개도 만큼 천천히 Open한다.◆  Heat Exchanger의 Air Vent Cock을 열어 Air를 배출한다.◆  Jacket Cool. Water 출구변을 기존의 개도 만큼 천천히 Open한다◆  By –pass v/v를 천천히 Close한다.6)   장치내의 진공은 약간 떨어지며 급수는 비등하기 시작한다7)   증발된 증기가 응축되어 증류수가 일정량 모이면 Distillate Pump의 출구변을열고 Distillate Pump를 운전한다. 진공은 다시 상승하여 원상태로 복귀한다.8)   Salinity Indicator의 전원을 ON하고, Normal로 절환한다.염도가 높을 경우 Solenoid V/V가 Open되어 Evaporator Shell로 보내어진다.9)   염도가 정상으로 되면, 급수밸브를 조정하여 과비등이 되지 않도록 조정한다.10)   Evaporator Shell 내의 온도를 적정수준(45 ~ 60℃)으로 조정한다.",
+    "start_page": 3,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-2"
+  },
+  {
+    "header": "3.   조수기 운전 및 정지 - 3-2.  Stopping",
+    "content": "1) Salinity Indicator의 전원을 OFF한다.2) Heat exchanger 가열용 Jacket Cool. Water  By-pass V/V를 Open하고 입출구변을 Close한다.3) Distillate Pump를 정지하고 출구변을 Close한다.4) Heat Exchanger의 Feed Water V/V를 Close – Heat Exchanger가 냉각될 수 있는시간을 경과한 후에 Close한다.5) Ejector Pump를 정지하고 Overboard V/V를 포함한 해수계통의 모든 밸브를 닫는다.6) Vacuum Breaker V/V를 열어 진공을 떨어뜨린다.7) 장기간 정지 시에는 Heat Exchanger 내의 해수를 모두 배출시킨다.단, 진공이 형성되어 있는 상태에서 Bottom Blow V/V를 Open할 경우 해수에의해 Deflector가 충격 및 손상을 입을 가능성이 있으므로 주의하여야 한다.",
+    "start_page": 4,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-3"
+  },
+  {
+    "header": "3.   조수기 운전 및 정지 - 3-3.  Handling 시 유의사항",
+    "content": "1) 장치내의 Coating 부가 손상될 수 있으므로 화기작업을 금한다.2) Condenser Cooling Tube의 부식/침식을 방지하기 위해 다음사항에 유의한다.◆  Condenser 냉각수 입구변을 Open하고 출구변으로 냉각수의 양을 조절 요하며 배압은 최소한 0.2 Kg/㎠을 유지.◆  Condenser 입.출구의 냉각수 온도차는 지정치로 유지하여야 한다.◆  Condenser Cover의 Anode Protector의 상태확인.3) Heating Tube의 Scale 형성을 방지하기 위해 다음 사항에 유의하여야 한다.◆  Feed Water 압력을  Pressure Gauge의 Green Belt 영역내로 유지한다.◆  조수용량을 규정치보다 초과하지 않도록 한다 – 염도상승의 우려가 있음.",
+    "start_page": 4,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-4"
+  },
+  {
+    "header": "3.   조수기 운전 및 정지 - 3-4.  조수량의 조절",
+    "content": "1)   조수량의 조절은 Heat Exchanger로 가는 Jacket Cool. F.W의 양을 가감함으로써가능하다. Jacket Cool. F.W 온도가 지정치보다 낮을 경우 통과량을 증가시키다.2)   Condenser의 냉각해수는 Cooling Tube를 통과한 해수가 통과전의 온도보다 높아지도록 조정한다.3)   해수온도가 낮은 지역 항해 시 Evaporator Shell 내의 온도가 낮아지면◆  Vacuum Breaker V/V를 약간 열어 진공을 떨어뜨리면 온도가 올라간다.◆  Condenser 냉각 해수량을 감소시켜 온도를 조절한다.4)   해수온도가 높은 지역 항해시 Evaporator Shell 내의 온도가 규정치보다 높아지면 Condenser 냉각 해수량을 증가시키므로 온도를 조절할 수 있다.5)   증발온도가 과도하게 높으면 Heat Exchanger의 Tube에 Scale 형성의 위험이있고, 과도하게 낮으면 과비등 되어 해수 방울이 Condenser로 공급되어 염도상승의 원인이 된다.",
+    "start_page": 5,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-5"
+  },
+  {
+    "header": "3.   조수기 운전 및 정지 - 3-5.  약품 활용 소제 방법",
+    "content": "주의 사항1) 정격 조수량 이상 운전하면, HEATER 등 각부에 SCALE이 다량 부착된다.2) 항만 등 오염지역 내에서 운전하지 않는다.박테리아 등 유해한 세균이 살균되지 않는 상태로 생산된다.3) 부득이 1), 2) 항 경우에 운전을 하였을 때에는 증류수를 철저히 약품으로 소독하거나, 조수기 소제 주기를 앞당기도록 한다.자. 소제1) 매 8,000시간 마다 항해 중 HEATER(해수 측)를 약품으로 소제한다.2) 염도계 SENSOR 및 ACCESSORY는 2,000시간 마다 소제한다.3) 소제 약품은 DREW AMEROID의 DESCALE-IT를 사용한다.4) 소제 종류가) CIRCULATION CLEANING(1) PUMP를 사용하여 CHAMBER와 약품통(임시 설치한 드럼)의 세정액을 계속 순환시킨다.(2) 소제를 하기 위해서 추가로 보조 장비(펌프와 추가 PIPELINE)를설치하는 번거러움이 있다.(3) 한꺼번에 전체 계통을 소제할 수 있고, 소제 능력이 탁월하다.나) SOAKING CLEANING(1) CHAMBER에 부착된 SIGHT GLASS를 통해서 약품을 잘 녹인 세정액을 HEATER가 잠기도록 채운 후 최대 24시간 이내로 방치한다.(2) 열교환기를 통하여 스팀이나 공기 기포로 저어준다. 만약 스팀을 사용할 경우 세정액의 온도가 71℃가 넘지 않도록 해야 한다.(3) 소제하는 방법이 간단하다.5) 소제 방법가) 세정액은 약품을 물 100Ltr당 30Ltr 비율로 혼합하여 만든다.나) 세정 효과를 높이기 위해 54℃로 가열하는데, 71℃를 넘지 않아야 한다.다) 대부분의 스케일은 4∼12시간에 제거 된다.라) 세정작용이 완료 되었을 때, 용액을 배출하고 청수로 세척해야 하며, 그뒤 금속 표면을 중화하기 위하여 GC 5%용액을 순환 시킨다.",
+    "start_page": 5,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-6"
+  },
+  {
+    "header": "1. 장비 사양 및 매뉴얼 주요부분 해석",
+    "content": "장비명 : 조수기Model: DX-α-40(shell type)Capacity of Distillate: 40Ton/day    Max. Salnity : 10 ppmNo. of set per ship: 1set/shipCooling Sea Water Temp.: Inlet 32℃Jacket Cooling Water Temp.: Inlet 83℃, 85,000kg/hrDistillate Pump & Motor: 2.5M3/hr, 30mAq, 3Phase, 1.5kWEjector Pump & Motor: 90M3/hr, 48mAq, 3PhaseMotor: AC 440Volt, 60Hz, 3PhaseSalinity Indicator: AC 220Volt, 60Hz, 1Phase•   메인엔진  재킷 냉각수의 열 을 이용해, 고진공 상태에서 해수를 저온에서 증발시켜음용 가능한 물을 생산한다.•   필요 시  증기(Steam)  도 열원으로 사용할 수 있다.•   구조는  쉘&튜브 열교환기 2세트 (증발기, 콘덴서 역할)로 구성된다.•   워터 이젝터 는 해수를 흡입·방출하면서 진공을 형성하며, 동시에 브라인(농축수)과공기를 배출한다.•   진공 상태의 증발기에 해수가 유입되면 증발 → 미스트 세퍼레이터·디미스터를 거쳐 물방울을 제거 → 깨끗한 증기는 콘덴서에서 해수 냉각으로 응축되어 담수화된다.•   생산된 담수는  담수 펌프 를 통해 공급되며,  염도계·솔레노이드 밸브 로 제어된다.만약 염도가 기준 이상일 경우 자동으로 셸 내부 또는 배출 라인으로 되돌려보낸다.•   콘덴서 냉각수와 증발기 냉각수 라인에는 온도계가 설치되어, 가열·냉각 제어가가능하다.•   염도계는 선교(Bridge) 및 기관제어실에 원격경보로 연동되어,  고염분 발생 시 즉각 경보 를 발생시킨다.",
+    "start_page": 6,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-7"
+  },
+  {
+    "header": "1. 장비 사양 및 매뉴얼 주요부분 해석 - 1-1.   운전 조건:",
+    "content": "1)이젝터 입구압력: 밸러스트 시 약  3 bar.g , 적재 시 약  4 bar.g2)이젝터 출구압력:  0.6 bar 이하3)급수(Feed Water)는  피드밸브로 제어•   설치 시  온도계·계기류 판독이 용이 해야 한다.•   배관은 단순화하여  불필요한 압력손실 을 최소화할 것 (펌프 효율·생산수량 보장).•   신선수 라인은 반드시  담수탱크와 연결 해야 한다.•   FWG 생산수는 용존산소가 극히 적어  화학적으로 불안정  → 안정화 과정에서 다른 물질과 반응해 색깔이 붉거나 갈색으로 변할 수 있음. 따라서  스테인리스강·비철 배관  사용 권장.",
+    "start_page": 7,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-8"
+  },
+  {
+    "header": "1. 장비 사양 및 매뉴얼 주요부분 해석 - 1-2.   설치 시 압력 조건:",
+    "content": "1)이젝터 입구압력: 최소  3 bar (Ballast)  /  4 bar (Loaded)2)이젝터 출구압력:  0.6 bar 이하3)담수 배출 라인(counter pressure):  0.5 ~ 1.8 bar 이하•   FWG 인근에 설치된  이젝터-해수 펌프 조합 은 오버보드 배관 역압  0.6 bar 이하까지 견딜 수 있도록 설계되어야 한다. 만약 초과된다면, 추가 양정 및 배관저항에 맞게 별도 설계 필요.",
+    "start_page": 8,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-9"
+  },
+  {
+    "header": "1. 장비 사양 및 매뉴얼 주요부분 해석 - 1-3.   스팀 인젝터 설치 주의",
+    "content": "•   스팀 드레인 라인에  역압 이 걸리면 이상 진동 발생 → 시스템 운전 불능 가능성있음.•   인젝터 후단 압력이  1 bar 초과 시 세이프티 밸브 작동 .•   공급 스팀 압력이 설계보다 낮을 경우, 진동·소음 발생 → ±5% 범위 내 유지 필요.",
+    "start_page": 8,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-10"
+  },
+  {
+    "header": "4.   운전 (DX-α 시리즈, 재킷 냉각수 이용) - 4-1. 기기 기동 (시동 절차)",
+    "content": "운전 전 반드시 다음 사항을 확인한다:•   급수 처리 지침(“화학 주입 부분”)을 준수할 것•   디스틸레이트 펌프 회전 방향 확인•   증발기 재킷 냉각수 입·출구 밸브 닫기•   진공 파괴 밸브 닫기•   증발기 급수 밸브 닫기•   디스틸레이트 펌프 출구 밸브 닫기•   하부 드레인 밸브 닫기•   콘덴서 냉각수 입·출구 밸브 열기주의:1)FWG(담수기)의 디스틸레이트 펌프를  공회전 상태에서 기동 금지2)해수 유량은  규정 유량 유지 해야 함 (이 값은 해수 이젝터 펌프 전양정에 따라 달라짐)",
+    "start_page": 8,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-11"
+  },
+  {
+    "header": "4.   운전 (DX-α 시리즈, 재킷 냉각수 이용) - 4-2. 기동 절차:",
+    "content": "•   Step 1 : 해수 이젝터 펌프 기동① 흡입 밸브 및 배출(오버보드) 밸브 전개방② 이젝터 펌프 기동③ 배출 밸브를 서서히 개방※ 이때 이젝터 입구 압력은  3 kg/cm² 이상  유지할 것•   Step 2 : 충분한 진공 형성(약 92%)까지 대기•   Step 3 : 급수 밸브 전개방 → 해수를 증발기에 주입→ 전개방해야 스케일 발생 방지. 다만, 염분이 높아질 경우 약간 닫는다.•   Step 4 : 진공이 안정되면 열교환기 재킷 냉각수 입·출구 밸브 개방→ 밸브는 반드시  서서히 개방  (기관 열충격 방지 목적)→ 진공이 85% 정도로 떨어지고, 비등온도가 상승하면 증발이 시작된 것임.•   Step 5 : 열교환기 상부 에어벤트 콕 개방 → 잔류 공기 완전 배출 후 닫기•   Step 6 : 염도 알람 작동시켜 담수 품질 확인•   Step 7 : 디스틸레이트 펌프 흡입측 Sight Glass에 담수가 보이면 펌프 기동→ 정상 토출압:  1.5 ~ 2.5 kg/cm²→ 해수 온도 하강 시 생산량 증가하나, 과잉 생산 시 콘덴서의 유효 면적 감소→ 증발량 저하 → 운전 균형 유지 필요",
+    "start_page": 9,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-12"
+  },
+  {
+    "header": "4.   운전 (DX-α 시리즈, 재킷 냉각수 이용) - 4-3. 생산량 조절 (Regulating the capacity)",
+    "content": "•   생산량은  재킷 냉각수 유량 을 조절해 맞춘다 (By-pass 밸브 이용).•   담수 생산량은  유량계 로 측정.•   재킷 냉각수 온도가 낮을 경우 → 열교환기 통과 유량을 조금 늘린다.•   콘덴서 냉각해수는 출구온도가 규정 온도에 맞게 조절.온도 조건:•   증발온도 너무 낮음  (저수온 해역):→ 진공 파괴 밸브 약간 개방 or 콘덴서 냉각해수량 감소시켜 증발온도 상승 유도•   증발온도 너무 높음  (고수온 해역):→ 냉각해수 유량 증가 → 증발온도 낮춤위험성:•   증발온도 과도 상승 → 스케일 형성 위험 ↑•   증발온도 과도 하락 → 미증발 해수가 콘덴서로 유입 → 고염도 담수 발생 위험↑",
+    "start_page": 10,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-13"
+  },
+  {
+    "header": "4.   운전 (DX-α 시리즈, 재킷 냉각수 이용) - 4-4. 정지 절차 (Stopping)",
+    "content": "선박이  항구, 연안, 하구 에 접근할 경우 FWG를 정지해야 함 (세균 오염 위험 때문).정지 절차:•   Step 1: 기관 냉각수 By-pass 밸브 서서히 개방•   Step 2: 증발기 냉각수 입·출구 밸브 점진적 폐쇄•   Step 3: 급수 처리 밸브 닫기•   Step 4: 디스틸레이트 펌프 정지•   Step 5: 증발기 온도 50℃ 이하로 냉각 후 급수 밸브 닫기•   Step 6: 이젝터 펌프 정지•   Step 7: 해수 흡입 밸브 및 오버보드 밸브 닫기•   Step 8: 진공 파괴 밸브 개방•   Step 9: 담수탱크 밸브 닫기•   Step 10: 해수 공급 라인 분기 드레인 밸브 개방 → 열교환기 냉각금지사항:1)대기압 형성 위해 바텀 블로우 밸브를 열면 안 됨 → 해수가 분출되어 디플렉터 손상2)장기간 미사용 시 반드시 열교환기 내 해수를 전량 배수",
+    "start_page": 10,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-14"
+  },
+  {
+    "header": "4.   운전 (DX-α 시리즈, 재킷 냉각수 이용) - 4-5. 운전 중 주의사항 (Attention during operation)",
+    "content": "1)생산량 조절•   담수 생산량은 재킷 냉각수 유량 조절에 따라 결정•   청결한 상태에서는 정격 이상 생산도 가능하나, 과잉 생산 시 스케일 형성 위험→  정격 이하 운전 권장2)콘덴서•   증기 전량 응축 위해서는 냉각해수는  가능한 차갑게  유지•   냉각해수 입출구 온도차 반드시 기록 → 냉각수량 조절 근거로 사용3) 냉각해수 유량 문제:•   과잉 공급  → 고속 유동으로  부식(침식)  위험 ↑•   부족 공급  → 냉각 불충분 → 담수 생산량 감소4)냉각수량 계산식:Q=D×24.5t1 − t2Q = \\frac{D \\times 24.5}{t1 - t2}Q=t1 − t2D×24.5•   D = 담수 생산량 (톤/일)•   t1 = 콘덴서 입구 온도•   t2 = 콘덴서 출구 온도•   Q = 콘덴서 냉각수 유량정기적으로 운전 데이터를 기록하면, FWG의  이상 징후 조기 발견  가능하다.5)점검(Inspection)•   주기 : 예를 들어  연 2회  정기 점검.•   내용 :o   분리기 상부 커버와 열교환기 하부 커버를 열어  튜브 내부 스케일  및  내부 코팅 박리(exfoliation)  여부 점검.o   콘덴서 커버를 열어  냉각 튜브 슬러지/이물 부착  여부 점검.o   펌프 는 정기적으로 점검·세척하고,  부식 부품 은 예비품으로 교체.",
+    "start_page": 11,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-15"
+  },
+  {
+    "header": "6. 누설 및 압력 시험",
+    "content": "6-1) 진공 유지 곤란 시(누설 시험)•   시간이 지나면 패킹·조인트 열화로 누설이 생길 수 있음 →  누설 시험  실시.•   절차:",
+    "start_page": 12,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-16"
+  },
+  {
+    "header": "1.   디스틸레이트 펌프  출구 밸브 ,  진공 브레이커 ,  바텀 블로우 ,  급수 밸브 를",
+    "content": "모두 닫음 .",
+    "start_page": 12,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-17"
+  },
+  {
+    "header": "4.   패킹·조인트 부위에  비눗물 분사  → 기포로 누설 위치 확인.",
+    "content": "6-2) 압력 시험(콘덴서/열교환기)•   콘덴서 : 워터 챔버 분리 → 증발기 측에 공기를 주입해 쉘 내압  0.5 kg/cm²  유지→ 비눗물로 누설 확인.•   증발기(히터) :o   하부 커버 분리 → 쉘 측에  4~5 kg/cm²   수압 을 걸어 누설 확인.o   미세 균열/핀홀 확인: 튜브플레이트 표면에 비눗물 도포 후 쉘 측에  1.0kg/cm²(대기압)  가해 확인.",
+    "start_page": 12,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-18"
+  },
+  {
+    "header": "7. 튜브 세정(스크일 제거, De-scaling) - 7-1. 세정 주기",
+    "content": "•   FWG에는  히터(증발기), 콘덴서, 프리히터 가 있으며,  스케일은 주로 히터의 가열튜브 에 형성.•   화학 세정은  콘덴서 입구 온도계 포트에 어댑터 (옵션)를 연결해 전체 계통 순환세정 가능.•   일반적으로  연 2~3회  히터 내부 화학 세정. (운전 조건·해수 성상에 따라 변동)•   세정 필요 판단 기준:1)히터  입·출구 재킷수 온도차 로 냉각수량을 추정. 쉘 온도가 열수지상  증발온도 이하 로 유지되는데도 정격 생산량을 위해 더 많은 재킷수가 필요해지면 스케일 의심.§   재킷수량 계산:QJ=23.6×DΔT(T/h)Q_J = \\frac{23.6 \\times D}{\\Delta T}\\quad(\\text{T/h})QJ=ΔT23.6×D(T/h)§   DDD: 담수 생산량(T/day), ΔT\\Delta TΔT: 히터  출구–입구  온도차(℃)2)스팀 인젝터 장착선 : 열수지는 같은데  재킷수 입구온도 가 이전보다 높아지는 경향 → 스케일 진행 신호.•   위 현상 관찰 시, 분리기 앞  사이트 글래스 를 제거하고 특수 공구로 내부 스케일상태를 추가 확인.",
+    "start_page": 13,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-19"
+  },
+  {
+    "header": "7. 튜브 세정(스크일 제거, De-scaling) - 7-2. 화학 세정 방법",
+    "content": "•   스케일 제거는  물리적 방법 (브러시·드릴·급냉·가압수)과  화학적 방법 (용해)이 있음.물리는 완전 제거가 어려워  화학 세정 이 일반적(빠르고, 튜브 손상 적고, 경제적).•   준비a) 바텀 블로우 밸브로 쉘의 해수를 배출.b) 바텀 블로우  완전 폐  및  사이트 글래스 분리 .•   약액 조제o   드럼에서 조제:  물을 먼저 넣고  화학약품을  그 다음  투입.•   권장 약품(예) : SAF-ACID(Drew, USA), DSC(Yokosuka Kase, JP), GAMLEN XD(USA),ATLAS H-400(UK) 등. (상세는 각 제조사 카탈로그 참조)•   세정 방식a)  침적 세정(Submerged) : 사이트홀로 용액을 주입해  상부 튜브플레이트 까지 잠기게 하고, 스케일 두께에 따라 방치. 포화되면 새 용액으로 교체하며 반복.b)  순환 세정(Circulated) : 콘덴서 워터 챔버  냉각수 입구 온도계 포트 에 투입 어댑터를, 히터  하부 커버 소켓 을 배출로 연결해  열교환기 전 계통 을 순환 세정.o   시리즈별  권장 용액량 은 표(매뉴얼) 참조.o   용액 농도는  권장치보다 약간 높게 . 세정 탱크 용량은  총 순환량 에 맞춤.•   세정 후 용액 배출 : 히터 하부의 바텀 블로우로 배출. (용해 방식이므로 펌프 임펠러/배관 막힘 우려 낮음)•   해수로 마무리 세정 : 급수 라인으로 히터에 해수를 흘려보내고, 이젝터 펌프를 돌려  오버보드 배출 .  펌핑↔배출 을 번갈아 내부가 깨끗해질 때까지 반복. (주의:  콘덴서로 해수 유입 금지 )•   사후 점검 : 상부에 스케일이 없더라도,  튜브 하부 1/5~1/4 구간 에 잔존 가능성이높으므로  손전등으로 하부까지 완전 확인 .•   금지 : 세정 작업 중  증기 사용 금지 (내부 코팅 심각 손상).",
+    "start_page": 13,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-20"
+  },
+  {
+    "header": "4.   정지 시  쉘이 손으로 만질 만큼 충분히 냉각 될 때까지 급수를 유지하고,  농축되지",
+    "content": "않은 신해수 로 상부 튜브플레이트까지 채워 둠.",
+    "start_page": 14,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-21"
+  },
+  {
+    "header": "4.   정지 시  쉘이 손으로 만질 만큼 충분히 냉각 될 때까지 급수를 유지하고,  농축되지 - 7-4. 급수 처리제의 연속 주입",
+    "content": "•   정지 중 정기 세정과 별개로,  운전 중  급수 라인에  소정량의 처리제(Scaleinhibitor)  를  지속 주입 하면 스케일 형성을 적극적으로 억제, 성능 저하 없이 수명 연장(경제적이라 최근 채택 증가).•   주입 방법 : 급수 오리피스  후단 에 있는 인히비터용 나사 포트에  케미컬 탱크 배관연결 →  퍼지미터 로 유량 제어. (오리피스 뒤는 진공영역이라  별도 주입펌프 불필요 )•   주의 : 탱크 잔량을 상시 감시.  탱크가 비면 공기 유입 으로 장치에 문제 발생.",
+    "start_page": 14,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-22"
+  },
+  {
+    "header": "8. 내부 코팅 수리(Repair of inside coating)",
+    "content": "•   점검 중 내부 코팅 손상이 발견되면  손상 부위 제거 → 건조 → 연마 → 재도장(에폭시 수지)  순으로 복원.•   절차1)손상 부위 코팅 제거, 주변  20mm 폭  포함해 사포/그라인더로 연마·청정·건조.2)휘발유 등으로  탈지 .3)에폭시 수지 + 경화제  혼합(충분히 혼합).  가용시간(pot life)  은 온도·배치 용량에 따라 달라지며  실온 기준 약 40분 .4)실온 경화:  1~2일 이면 대체로 경화 완료.•   주의 : 피부 접촉 시 즉시 물로 충분히 세척.9~11. 스케일 억제제(Scale inhibitor) 정보•   메커니즘(9) : 칼슘탄산염 등 스케일의  분산·반응 지연(Threshold effect)  으로 침전 방지. 예:  M-305  사용 시 장시간 세정 없이 안정 생산 가능.•   물성(10) :o   외관:  연한 적황색 액체o   비중:  1.07 ± 0.03o   pH:  10.4 ± 0.5•   투입량(11) :  침적식 튜브형 증류장치 (브라인 농도 1.5 미만) 기준,  생산수 1톤당30 g 을 표준으로 한다. (자세한 값은  첨부 화학 주입 차트  참조; 전자석 펌프/진공주입 시스템 사용 가능)",
+    "start_page": 15,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-23"
+  },
+  {
+    "header": "5.   트러블슈팅 표 (증상–원인–조치)",
+    "content": "[IMAGE][IMAGE]",
+    "start_page": 15,
+    "type": "section",
+    "has_image": true,
+    "id": "chunk-24"
+  },
+  {
+    "header": "3. 점검 체크리스트 (일일 점검)",
+    "content": "[IMAGE]•   온도(Temperature)o   J.C.F.W (Jacket Cooling Fresh Water) 입·출구:  80℃ / 65℃o   C.S.W (Cooling Sea Water) 입·출구:  16℃ / 24℃•   압력(Pressure)o   C.S.W 입·출구:  4~5 kg/cm² / 0.2~0.6 kg/cm²•   Shell 온도 및 진공(Shell Temp / Vacuum)o   50℃ / -63 ~ -70 cmHg•   Ejector Pump 전류 및 증류 펌프 압력 (Eject. P’P Amp / Dist. P’P Press)o   40 A / 2.4 kg/cm²•   염분(Salinity)o   15 ppm 이하",
+    "start_page": 19,
+    "type": "section",
+    "has_image": true,
+    "id": "chunk-25"
+  },
+  {
+    "header": "4. 사고·고장 사례 (합성 DB)",
+    "content": "Marine Freshwater Generators: Common Problems And Solutions초기 운전 시: 담수 펌프 운전 시 처음 30분 동안 생산된 증류수는 반드시 선외로 배출해야 한다.운전 중지 조건: 선박이 육지·항구·하구(강 어귀) 근처에 접근할 때는 조수기를 반드시정지해야 한다. 이 구역의 해수는 세균에 오염될 수 있으며, 증류수에 섞여 장치 오작동을 유발할 수 있다.대기압 회복 시 주의: 증발기 내부 압력을 복원하기 위해 하부 블로우 밸브를 열어서는 안 된다. 이 경우 히터 내 해수가 분출되어 디플렉터 플레이트 및 내부 부품을 손상시킬 수 있다.누수 점검 시: 증발기의 진공계를 제거하거나 주밸브를 완전히 닫은 상태에서 점검해야 한다.세정 작업 전: 제작사 매뉴얼에 따른 절차를 반드시 숙지 후 작업해야 한다.세정·세척 시: 증기를 사용해서는 안 된다. 증발기 내면의 특수 코팅이 손상될 수 있다.코팅재 취급: 피부에 닿을 경우 즉시 세척해야 하며, 주의 깊게 다루어야 한다.볼트 관리: 튜브 플레이트를 고정하는 볼트를 풀거나 제거하지 말아야 한다. 누수 위험이 있다.열·용접 금지: 내부 코팅 손상을 막기 위해 고온 가열이나 용접 불꽃 작업을 금지한다.이동 시: 상부 리프팅 홀을 사용하고, 제작사 도면에서 규정한 하중 용량의 와이어를사용해야 한다.배출 밸브: 증기 드레인 배출 라인에 밸브나 코크를 설치하면 조수기 손상을 초래할수 있으므로 설치하지 않아야 한다.에젝터 펌프 흡입부: 항상 해수로 채워진 상태여야 한다.",
+    "start_page": 19,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-26"
+  },
+  {
+    "header": "5. IMO 규정 인용 (합성 발췌)",
+    "content": "SOLAS Ch.II-2 Reg.10 (Fire Fighting):“기관구역 내 담수 발생장치(FWG) 및 부속 펌프는 화재안전설비가 배치된 구역에 설치되어야 하며, 관련 밸브와 배관은 화재 시 안전하게 차단·운용될 수 있어야 한다.”SOLAS Ch.III Reg.36 (Training and Drills):“생존에 필수적인 기기(예: 비상용 발전기, 담수기)의 운전법은 선원 훈련 과정에 포함되어야 하며, 정기 점검 및 비상훈련을 통해 기능을 검증해야 한다.”ISM Code §7 (Shipboard Operations):“선박은 매뉴얼 및 체크리스트에 따라 주요 기기(예: 보일러, 펌프, 담수기)의 운전·정비절차를 문서화하고, 선원 교육을 통해 긴급상황 대비를 확보해야 한다.”ISM Code §10 (Maintenance of the Ship and Equipment):“담수 발생장치 및 부속 펌프는 정기적 점검·정비 기록이 유지되어야 하며, 고장 시 즉각적인 시정조치와 재발방지 대책이 마련되어야 한다.”MLC 2006 Reg.3.2 (Food and Catering):“선내에서 생산·공급되는 식수는 음용수 기준을 충족해야 하며, 정기적 검사와 위생 관리가 보장되어야 한다. 선장은 음용수 저장 및 공급 시스템이 항상 안전하게 운용되도록관리해야 한다.”",
+    "start_page": 21,
+    "type": "section",
+    "has_image": false,
+    "id": "chunk-27"
+  }
+]
