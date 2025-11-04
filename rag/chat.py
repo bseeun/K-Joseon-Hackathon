@@ -42,7 +42,7 @@ def _gather_candidates(query: str, top_k: int = 5) -> List[Dict[str, Any]]:
     return top
 
 
-def _build_context(cands: List[Dict[str, Any]], max_chars: int = 1600) -> str:
+def _build_context(cands: List[Dict[str, Any]], max_chars: int = 4000) -> str:
     parts: List[str] = []
     for i, item in enumerate(cands, 1):
         ch = item["chunk"]
@@ -50,7 +50,9 @@ def _build_context(cands: List[Dict[str, Any]], max_chars: int = 1600) -> str:
         start_page = ch.get("start_page", "?")
         has_image = ch.get("has_image", False)
         content = (ch.get("content", "") or "")
-        snippet = content[: max(200, min(len(content), max_chars // len(cands) // 2))]
+        per_chunk = max_chars // max(1, len(cands))
+        snippet_len = max(800, min(len(content), per_chunk))
+        snippet = content[: snippet_len]
         image_note = " (이미지 포함)" if has_image else ""
         parts.append(
             f"--- 관련 문서 #{i} (제목: {header}, 페이지: {start_page}{image_note}) ---\n{snippet}\n"
@@ -83,7 +85,7 @@ def _build_prompt(context: str, query: str, language: str = "한국어", role: O
     
     prompt_parts.extend([
         "\n[근거]\n" + context + "\n\n[질문]\n" + query + "\n\n",
-        "요구: 핵심 Bullet→절차→주의/한계. 마지막에 참고 출처(제목·페이지)."
+        "요구: 문서에서 해당되는 모든 사례/항목을 가능한 빠짐없이 번호로 나열하고, 각 항목에 대해 핵심 Bullet→절차→주의/한계를 포함하세요. 마지막에 참고 출처(제목·페이지)."
     ])
     
     return "\n".join(prompt_parts)
@@ -116,6 +118,7 @@ def answer(query: str, top_k: int = 5, language: str = "한국어", role: Option
             {"role": "user", "content": prompt},
         ],
         temperature=0.2,
+        max_tokens=2000,
     )
     text = resp.choices[0].message.content
 

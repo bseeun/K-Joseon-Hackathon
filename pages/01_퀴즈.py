@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 from dotenv import load_dotenv
+import pandas as pd
 
 from rag.store import list_manuals
 from rag.quiz import generate_quiz, grade
@@ -29,6 +30,18 @@ if "role" not in st.session_state:
     st.session_state.role = "3등 기관사"
 if "show_settings" not in st.session_state:
     st.session_state.show_settings = False
+if "quiz_type" not in st.session_state:
+    st.session_state.quiz_type = "mcq"  # "mcq" | "ordering"
+if "selection_mode" not in st.session_state:
+    st.session_state.selection_mode = "random"  # "random" | "topic"
+if "topic" not in st.session_state:
+    st.session_state.topic = ""
+if "num_questions" not in st.session_state:
+    st.session_state.num_questions = 5
+if "ordering_answers" not in st.session_state:
+    st.session_state.ordering_answers = {}  # idx -> List[str]
+if "ordering_user" not in st.session_state:
+    st.session_state.ordering_user = {}  # idx -> List[str] from draggable table
 
 
 # Sidebar: manual select and upload shortcut
@@ -39,6 +52,22 @@ if manual_opts:
     sel_title = st.sidebar.selectbox("매뉴얼 선택", [*manual_opts.keys()])
 else:
     sel_title = "(없음)"
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("문항 유형")
+quiz_type_label = st.sidebar.selectbox(
+    "퀴즈 유형",
+    options=["객관식", "순서 맞추기"],
+    index=0 if st.session_state.quiz_type == "mcq" else 1,
+)
+st.session_state.quiz_type = "mcq" if quiz_type_label == "객관식" else "ordering"
+
+st.sidebar.subheader("문항 수 & 청크 선택")
+st.session_state.num_questions = st.sidebar.slider("문항 수", 1, 10, st.session_state.num_questions)
+sel_mode_label = st.sidebar.radio("청크 선택 방식", ["무작위", "주제 기반"], index=0 if st.session_state.selection_mode == "random" else 1, horizontal=True)
+st.session_state.selection_mode = "random" if sel_mode_label == "무작위" else "topic"
+if st.session_state.selection_mode == "topic":
+    st.session_state.topic = st.sidebar.text_input("주제 입력 (예: 조수기 정지 절차)", value=st.session_state.topic)
 
 st.sidebar.markdown("---")
 if st.sidebar.button("소스 업로드", use_container_width=True):
@@ -100,7 +129,8 @@ if st.session_state.show_settings:
 
 col_left, col_main = st.columns([1, 3])
 with col_main:
-    st.markdown("## 객관식 퀴즈")
+    title_map = {"mcq": "객관식 퀴즈", "ordering": "순서 맞추기 퀴즈"}
+    st.markdown(f"## {title_map.get(st.session_state.quiz_type, '퀴즈')}")
 
     if not manuals:
         st.info("먼저 메인 페이지에서 PDF 매뉴얼을 업로드하세요.")
@@ -116,33 +146,53 @@ with col_main:
             if st.button("퀴즈 생성", type="primary", disabled=not HAS_KEY):
                 with st.spinner("문항 생성 중…"):
                     st.session_state.quiz = generate_quiz(
-                        manual_id, 
-                        num_questions=5,
+                        manual_id,
+                        num_questions=st.session_state.num_questions,
                         language=st.session_state.language,
-                        role=st.session_state.role
+                        role=st.session_state.role,
+                        quiz_type=st.session_state.quiz_type,
+                        topic=(st.session_state.topic if st.session_state.selection_mode == "topic" else None),
+                        selection=st.session_state.selection_mode,
                     )
                     st.session_state.quiz_idx = 0
-                    st.session_state.answers = [-1] * len(st.session_state.quiz)
+                    if st.session_state.quiz_type == "mcq":
+                        st.session_state.answers = [-1] * len(st.session_state.quiz)
+                    else:
+                        st.session_state.answers = []
+                        st.session_state.ordering_answers = {}
 
         if st.session_state.quiz:
             idx = st.session_state.quiz_idx
             q = st.session_state.quiz[idx]
             st.write(f"문제 {idx+1}/{len(st.session_state.quiz)}")
             st.markdown(f"**{q['question']}**")
-            choice = st.radio(
-                "정답을 선택하세요",
-                options=list(range(len(q["options"]))),
-                format_func=lambda i: q["options"][i],
-                index=(
-                    st.session_state.answers[idx]
-                    if st.session_state.answers[idx] >= 0
-                    else 0
-                ),
-                key=f"q_{idx}_choice",
-            )
 
-            # Save choice
-            st.session_state.answers[idx] = choice
+            if q.get("type", "mcq") == "mcq":
+                choice = st.radio(
+                    "정답을 선택하세요",
+                    options=list(range(len(q["options"]))),
+                    format_func=lambda i: q["options"][i],
+                    index=(
+                        st.session_state.answers[idx]
+                        if st.session_state.answers[idx] >= 0
+                        else 0
+                    ),
+                    key=f"q_{idx}_choice",
+                )
+                st.session_state.answers[idx] = choice
+            else:
+                # ordering UI: 커뮤니티 컴포넌트 사용하여 드래그 정렬
+                items = q.get("items_shuffled", [])
+                try:
+                    from streamlit_sortables import sort_items  # type: ignore
+                    ordered = sort_items(items, direction="vertical", key=f"ord_dnd_{idx}")
+                    st.session_state.ordering_user[idx] = ordered or items
+                except Exception:
+                    # Fallback: 편집 불가 테이블(순서 변경 불가) + 안내
+                    df = pd.DataFrame({"항목": items})
+                    st.dataframe(df, hide_index=True, use_container_width=True)
+                    st.info("드래그 UI를 사용하려면 'streamlit-sortables' 설치가 필요합니다: pip install streamlit-sortables")
+                    st.session_state.ordering_user[idx] = items
 
             cols = st.columns([1, 1, 6])
             with cols[0]:
@@ -163,7 +213,31 @@ with col_main:
 
             st.markdown("---")
             if st.button("결과 보기", type="secondary", disabled=not HAS_KEY, key="show_result"):
-                res = grade(st.session_state.quiz, st.session_state.answers)
+                if st.session_state.quiz_type == "mcq":
+                    res = grade(st.session_state.quiz, st.session_state.answers)
+                else:
+                    # ordering 채점: 사용자 순서와 정답 순서 비교
+                    details = []
+                    correct_count = 0
+                    for qi, qq in enumerate(st.session_state.quiz):
+                        if qq.get("type", "ordering") != "ordering":
+                            continue
+                        user_seq = st.session_state.ordering_user.get(qi, [])
+                        if not user_seq or len(user_seq) != len(qq.get("correct_order", [])):
+                            ok = False
+                        else:
+                            ok = user_seq == qq.get("correct_order", [])
+                        correct_count += int(ok)
+                        details.append({
+                            "question": qq.get("question", ""),
+                            "type": "ordering",
+                            "user_order": user_seq,
+                            "correct_order": qq.get("correct_order", []),
+                            "correct": ok,
+                            "citation": qq.get("citation", {}),
+                            "explanation": qq.get("explanation", ""),
+                        })
+                    res = {"score": correct_count, "total": len(details), "details": details}
                 st.session_state.quiz_result = res
                 st.rerun()
 
@@ -171,6 +245,17 @@ with col_main:
             res = st.session_state.quiz_result
             st.success(f"점수: {res['score']} / {res['total']}")
             for i, d in enumerate(res["details"], 1):
-                st.write(
-                    f"{i}. {'✅' if d['correct'] else '❌'} 정답: {d['answer']+1}, 선택: {d['user']+1} | 출처: {d['citation'].get('title','')} (p.{d['citation'].get('page','?')})"
-                )
+                if d.get("type") == "ordering":
+                    st.write(f"{i}. {'✅' if d['correct'] else '❌'} | 출처: {d['citation'].get('title','')} (p.{d['citation'].get('page','?')})")
+                    st.markdown("- 내가 고른 순서:")
+                    st.markdown("  - " + " → ".join([it for it in d.get("user_order", []) if it]))
+                    st.markdown("- 정답 순서:")
+                    st.markdown("  - " + " → ".join(d.get("correct_order", [])))
+                    if d.get("explanation"):
+                        st.markdown(d["explanation"])
+                else:
+                    st.write(
+                        f"{i}. {'✅' if d['correct'] else '❌'} 정답: {d['answer']+1}, 선택: {d['user']+1} | 출처: {d['citation'].get('title','')} (p.{d['citation'].get('page','?')})"
+                    )
+                    if d.get("explanation"):
+                        st.markdown(d["explanation"])
