@@ -3,16 +3,25 @@ from __future__ import annotations
 import streamlit as st
 from dotenv import load_dotenv
 import pandas as pd
+import os
+import tempfile
 
-from rag.store import list_manuals
+from rag.store import list_manuals, register_manual, update_meta_counts, save_chunks, save_embeddings, manual_paths
+from rag.parser import pdf_parser
+from rag.embed import embed_texts
+from rag.index import build_faiss_ip_index, save_index
 from rag.quiz import generate_quiz, grade
 
 load_dotenv()
 st.set_page_config(page_title="퀴즈", layout="wide")
 
-import os
-
 HAS_KEY = bool(os.getenv("OPENAI_API_KEY"))
+
+
+def _has_api_key() -> bool:
+    return bool(os.getenv("OPENAI_API_KEY"))
+
+
 if not HAS_KEY:
     st.warning("OPENAI_API_KEY가 설정되지 않았습니다. .env에 키를 넣어주세요.")
 
@@ -42,6 +51,16 @@ if "ordering_answers" not in st.session_state:
     st.session_state.ordering_answers = {}  # idx -> List[str]
 if "ordering_user" not in st.session_state:
     st.session_state.ordering_user = {}  # idx -> List[str] from draggable table
+if "show_upload" not in st.session_state:
+    st.session_state.show_upload = False
+
+# 페이지 간 이동 시 다이얼로그 상태 초기화
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "quiz"
+if st.session_state.get("current_page") != "quiz":
+    st.session_state.show_settings = False
+    st.session_state.show_upload = False
+    st.session_state.current_page = "quiz"
 
 
 # Sidebar: manual select and upload shortcut
@@ -69,12 +88,82 @@ st.session_state.selection_mode = "random" if sel_mode_label == "무작위" else
 if st.session_state.selection_mode == "topic":
     st.session_state.topic = st.sidebar.text_input("주제 입력 (예: 조수기 정지 절차)", value=st.session_state.topic)
 
-st.sidebar.markdown("---")
-if st.sidebar.button("소스 업로드", use_container_width=True):
-    try:
-        st.switch_page("app.py")
-    except Exception:
-        st.sidebar.info("메인에서 '소스 업로드'를 이용하세요.")
+
+def _upload_dialog_body():
+    st.subheader("소스 업로드")
+
+    if not _has_api_key():
+        st.info("OPENAI_API_KEY 설정 후 이용해 주세요.")
+        return
+
+    # Existing manuals
+    manuals = list_manuals()
+    if manuals:
+        st.markdown("#### 업로드된 매뉴얼")
+        for m in manuals:
+            st.caption(f"- {m['title']} (id: {m['id']})")
+    else:
+        st.caption("아직 업로드된 매뉴얼이 없습니다.")
+
+    st.markdown("---")
+    file = st.file_uploader(
+        "PDF 매뉴얼 업로드", type=["pdf"], accept_multiple_files=False
+    )
+
+    if file is not None:
+        title = st.text_input("매뉴얼 제목", value=os.path.splitext(file.name)[0])
+        proceed = st.button("업로드 및 인덱싱 시작", type="primary")
+        if proceed:
+            with st.status("인덱싱 중...", expanded=True) as status:
+                try:
+                    # Save uploaded PDF to temp
+                    with tempfile.NamedTemporaryFile(
+                        delete=False, suffix=".pdf"
+                    ) as tmp:
+                        tmp.write(file.read())
+                        tmp_path = tmp.name
+                    st.write("1/4 PDF 저장 완료")
+
+                    # Register manual -> copy to data folder
+                    meta = register_manual(title, tmp_path)
+                    mid = meta["id"]
+                    st.write(f"2/4 매뉴얼 등록 완료(id: {mid})")
+
+                    # Parse -> chunks
+                    chunks = pdf_parser(manual_paths(mid)["pdf"])
+                    save_chunks(mid, chunks)
+                    st.write(f"3/4 파싱 완료, 청크 수: {len(chunks)}")
+
+                    # Embed -> index
+                    docs = [
+                        f"제목: {c.get('header','')}, 내용: {c.get('content','')}"
+                        for c in chunks
+                    ]
+                    emb = embed_texts(docs)
+                    save_embeddings(mid, emb)
+                    idx = build_faiss_ip_index(emb)
+                    save_index(idx, manual_paths(mid)["index"])
+
+                    # Update meta
+                    try:
+                        import fitz
+
+                        with fitz.open(manual_paths(mid)["pdf"]) as d:
+                            update_meta_counts(mid, d.page_count, len(chunks))
+                    except Exception:
+                        update_meta_counts(mid, None, len(chunks))
+
+                    status.update(label="완료", state="complete")
+                    st.success("업로드/인덱싱이 완료되었습니다.")
+                    st.rerun()  # 매뉴얼 목록 새로고침
+                except Exception as e:
+                    status.update(label="실패", state="error")
+                    st.error(f"오류: {e}")
+                finally:
+                    try:
+                        os.unlink(tmp_path)
+                    except Exception:
+                        pass
 
 
 def _settings_dialog():
@@ -111,21 +200,43 @@ def _settings_dialog():
 
 
 # 상단 설정 버튼
-col_title, col_setting = st.columns([1, 0.15])
+col_title, col_upload, col_setting = st.columns([1, 0.2, 0.15])
+with col_upload:
+    if st.button("소스 업로드", disabled=not HAS_KEY, key="upload_button"):
+        st.session_state.show_upload = True
+        st.session_state.show_settings = False  # 설정 다이얼로그 닫기
+    if not HAS_KEY:
+        st.caption("API 키가 없으면 업로드/인덱싱을 사용할 수 없습니다.")
 with col_setting:
-    if st.button("⚙️ 설정", disabled=not HAS_KEY, use_container_width=True):
+    if st.button("설정", disabled=not HAS_KEY, use_container_width=True, key="settings_button"):
         st.session_state.show_settings = True
+        st.session_state.show_upload = False  # 업로드 다이얼로그 닫기
 
-# Settings dialog
-if st.session_state.show_settings:
+# Settings dialog (업로드 다이얼로그가 열려있지 않을 때만)
+if st.session_state.show_settings and not st.session_state.show_upload:
     try:
         @st.dialog("설정", width="medium")
-        def _dlg():
+        def _settings_dlg():
             _settings_dialog()
-        _dlg()
+        _settings_dlg()
     except Exception:
         with st.expander("설정", expanded=True):
             _settings_dialog()
+
+# Upload dialog (설정 다이얼로그가 열려있지 않을 때만)
+if st.session_state.show_upload and not st.session_state.show_settings:
+    try:
+        @st.dialog("소스 업로드", width="large")
+        def _dlg():
+            _upload_dialog_body()
+            if st.button("닫기"):
+                st.session_state.show_upload = False
+        _dlg()
+    except Exception:
+        with st.expander("소스 업로드", expanded=True):
+            _upload_dialog_body()
+            if st.button("닫기"):
+                st.session_state.show_upload = False
 
 col_left, col_main = st.columns([1, 3])
 with col_main:
@@ -143,7 +254,7 @@ with col_main:
             st.session_state.answers = []
 
         if not st.session_state.quiz:
-            if st.button("퀴즈 생성", type="primary", disabled=not HAS_KEY):
+            if st.button("퀴즈 생성", type="primary", disabled=not HAS_KEY, key="generate_quiz"):
                 with st.spinner("문항 생성 중…"):
                     st.session_state.quiz = generate_quiz(
                         manual_id,
