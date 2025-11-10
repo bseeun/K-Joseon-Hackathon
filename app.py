@@ -18,6 +18,7 @@ from rag.store import (
     save_chunks,
     save_embeddings,
     manual_paths,
+    delete_manual,
 )
 from rag.chat import answer as rag_answer
 
@@ -51,7 +52,6 @@ if "show_settings" not in st.session_state:
     st.session_state.show_settings = False
 if "delete_pending" not in st.session_state:
     st.session_state.delete_pending = None  # 삭제 대기 중인 chat_id
-
 # 페이지 간 이동 시 다이얼로그 상태 초기화
 if "current_page" not in st.session_state:
     st.session_state.current_page = "app"
@@ -92,25 +92,36 @@ def _get_chat_title(chat_id: str) -> str:
 
 def _sidebar():
     st.sidebar.title("매뉴얼 챗봇")
-    
-    # 새 채팅 버튼을 제목 바로 아래에 배치
-    if st.sidebar.button("새 채팅", use_container_width=True, type="primary"):
+
+    # 새 채팅 버튼 크기 줄이기 (100% 대신 고정 폭 사용)
+    st.sidebar.markdown("""
+        <style>
+        div[data-testid="stSidebar"] button[data-testid="baseButton-primary"] {
+            max-width: 140px !important; /* 원하는 크기로 변경 */
+            width: 140px !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # 새 채팅 버튼
+    if st.sidebar.button("새 채팅", key="new_chat_btn", type="primary"):
         _new_chat()
-    
+
     st.sidebar.markdown("---")
     st.sidebar.subheader("대화 히스토리")
-    
-    # CSS로 메뉴 버튼 크기 고정 및 레이아웃 조정
+
+    # CSS 커스터마이징
     st.sidebar.markdown("""
     <style>
-    /* 메뉴 버튼(···) 크기 고정 */
+    /* 메뉴 버튼 고정 크기 */
     button[key*="menu_btn"] {
-        min-width: 35px !important;
-        width: 35px !important;
-        flex-shrink: 0 !important;
-        padding: 0.25rem 0.5rem !important;
+        min-width: 30px !important;
+        max-width: 30px !important;
+        width: 30px !important;
+        padding: 2px 0 !important;
     }
-    /* 제목 버튼이 넘치면 말줄임표 표시 */
+
+    /* 대화 제목 버튼 말줄임 처리 */
     button[key*="chat_btn"] {
         overflow: hidden;
         text-overflow: ellipsis;
@@ -118,48 +129,38 @@ def _sidebar():
     }
     </style>
     """, unsafe_allow_html=True)
-    
+
     chats = list(st.session_state.conversations.keys())
+
     for cid in chats:
         title = _get_chat_title(cid)
-        # 메뉴 버튼 공간을 확보하기 위해 컬럼 비율 조정
-        col1, col2 = st.sidebar.columns([9, 1], gap="small")
+
+        # 비율을 좁혀서 오른쪽 점(...) 공간 확보
+        col1, col2 = st.sidebar.columns([8.5, 1.5], gap="small")
+
         with col1:
             if st.button(title, use_container_width=True, key=f"chat_btn_{cid}"):
                 st.session_state.active_chat = cid
-                st.session_state.delete_pending = None  # 대화 선택 시 삭제 모드 해제
-        with col2:
-            # 메뉴 버튼은 고정 크기로 표시 (줄바꿈 방지)
-            if st.button("···", key=f"menu_btn_{cid}", help="옵션", use_container_width=False):
-                # 메뉴 버튼 클릭 시 삭제 대기 상태로 전환
-                if st.session_state.delete_pending == cid:
-                    st.session_state.delete_pending = None  # 다시 클릭하면 취소
-                else:
-                    st.session_state.delete_pending = cid
-                st.rerun()
-        
-        # 삭제 대기 상태일 때 삭제 버튼 표시
-        if st.session_state.delete_pending == cid:
-            if st.sidebar.button("삭제", key=f"confirm_delete_{cid}", type="primary", use_container_width=True):
-                # 대화 삭제
-                if cid in st.session_state.conversations:
-                    del st.session_state.conversations[cid]
-                if cid in st.session_state.chat_titles:
-                    del st.session_state.chat_titles[cid]
-                # 삭제된 대화가 현재 활성 대화면 새 대화 생성
-                if st.session_state.active_chat == cid:
-                    if chats:
-                        # 다른 대화가 있으면 첫 번째로 전환
-                        remaining = [c for c in chats if c != cid]
-                        if remaining:
-                            st.session_state.active_chat = remaining[0]
-                        else:
-                            _new_chat()
-                    else:
-                        _new_chat()
                 st.session_state.delete_pending = None
+                st.session_state.show_upload = False
+                st.session_state.show_settings = False
+
+        with col2:
+            if st.button("···", key=f"menu_btn_{cid}", help="옵션"):
+                st.session_state.delete_pending = None if st.session_state.delete_pending == cid else cid
                 st.rerun()
 
+        if st.session_state.delete_pending == cid:
+            if st.sidebar.button("삭제", key=f"confirm_delete_{cid}", type="primary", use_container_width=True):
+                del st.session_state.conversations[cid]
+                if cid in st.session_state.chat_titles:
+                    del st.session_state.chat_titles[cid]
+
+                if st.session_state.active_chat == cid:
+                    remaining = [c for c in chats if c != cid]
+                    st.session_state.active_chat = remaining[0] if remaining else None
+                st.session_state.delete_pending = None
+                st.rerun()
 
 def _upload_dialog_body():
     st.subheader("소스 업로드")
@@ -173,7 +174,16 @@ def _upload_dialog_body():
     if manuals:
         st.markdown("#### 업로드된 매뉴얼")
         for m in manuals:
-            st.caption(f"- {m['title']} (id: {m['id']})")
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                st.caption(f"- {m['title']} (id: {m['id']})")
+            with col2:
+                if st.button("삭제", key=f"delete_manual_{m['id']}", help="매뉴얼 삭제"):
+                    if delete_manual(m['id']):
+                        st.success(f"'{m['title']}' 매뉴얼이 삭제되었습니다.")
+                        st.rerun()
+                    else:
+                        st.error("매뉴얼 삭제에 실패했습니다.")
     else:
         st.caption("아직 업로드된 매뉴얼이 없습니다.")
 
@@ -241,15 +251,33 @@ def _settings_dialog():
     """언어 및 직급 설정 다이얼로그"""
     st.subheader("설정")
     
-    languages = ["한국어", "영어", "중국어", "일본어"]
-    roles = ["3등 기관사", "2등 기관사", "1등 기관사", "기관장"]
+    # 언어 표시용과 내부 값 매핑
+    language_display = {
+        "한국어": "한국어",
+        "영어": "English",
+        "중국어": "中文",
+        "일본어": "日本語"
+    }
+    language_internal = {v: k for k, v in language_display.items()}  # 역매핑
     
-    language = st.selectbox(
+    languages_display = ["한국어", "English", "中文", "日本語"]
+    languages_internal = ["한국어", "영어", "중국어", "일본어"]
+    
+    # 현재 선택된 언어의 표시값 찾기
+    current_lang_display = language_display.get(st.session_state.language, "한국어")
+    current_index = languages_display.index(current_lang_display) if current_lang_display in languages_display else 0
+    
+    language_display_selected = st.selectbox(
         "언어 선택",
-        options=languages,
-        index=languages.index(st.session_state.language) if st.session_state.language in languages else 0,
+        options=languages_display,
+        index=current_index,
         key="settings_language"
     )
+    
+    # 표시값을 내부값으로 변환
+    language = language_internal.get(language_display_selected, "한국어")
+    
+    roles = ["3등 기관사", "2등 기관사", "1등 기관사", "기관장"]
     
     role = st.selectbox(
         "직급 선택",
@@ -260,31 +288,41 @@ def _settings_dialog():
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("적용", type="primary", use_container_width=True):
+        if st.button("적용", type="primary", use_container_width=True, key="settings_apply"):
             st.session_state.language = language
             st.session_state.role = role
             st.session_state.show_settings = False
+            st.rerun()
     
     with col2:
-        if st.button("닫기", use_container_width=True):
+        if st.button("닫기", use_container_width=True, key="settings_close"):
             st.session_state.show_settings = False
+            st.rerun()
 
 
 def _topbar_upload_button():
     col1, col_upload, col_setting = st.columns([1, 0.2, 0.15])
     with col_upload:
-        if st.button("소스 업로드", disabled=not _has_api_key()):
+        # chat_input이 처리 중이면 버튼 비활성화
+        if st.button("소스 업로드", disabled=not _has_api_key() or st.session_state.get("chat_input_processed", False), key="topbar_upload_btn"):
             st.session_state.show_upload = True
             st.session_state.show_settings = False  # 설정 다이얼로그 닫기
+            st.session_state.chat_input_processed = False  # 플래그 리셋
+            st.rerun()
         if not _has_api_key():
             st.caption("API 키가 없으면 업로드/인덱싱을 사용할 수 없습니다.")
     with col_setting:
-        if st.button("설정", disabled=not _has_api_key(), use_container_width=True):
+        # chat_input이 처리 중이면 버튼 비활성화
+        if st.button("설정", disabled=not _has_api_key() or st.session_state.get("chat_input_processed", False), use_container_width=True, key="topbar_settings_btn"):
             st.session_state.show_settings = True
             st.session_state.show_upload = False  # 업로드 다이얼로그 닫기
+            st.session_state.chat_input_processed = False  # 플래그 리셋
+            st.rerun()
     
-    # Settings dialog (업로드 다이얼로그가 열려있지 않을 때만)
-    if st.session_state.show_settings and not st.session_state.show_upload:
+    # Settings dialog (업로드 다이얼로그가 열려있지 않을 때만, chat_input 처리 중이 아닐 때만)
+    if (st.session_state.show_settings and 
+        not st.session_state.show_upload and 
+        not st.session_state.get("chat_input_processed", False)):
         try:
             @st.dialog("설정", width="medium")
             def _dlg():
@@ -294,22 +332,26 @@ def _topbar_upload_button():
             with st.expander("설정", expanded=True):
                 _settings_dialog()
 
-    # Modal/dialog (설정 다이얼로그가 열려있지 않을 때만)
-    if st.session_state.show_upload and not st.session_state.show_settings:
+    # Modal/dialog (설정 다이얼로그가 열려있지 않을 때만, chat_input 처리 중이 아닐 때만)
+    if (st.session_state.show_upload and 
+        not st.session_state.show_settings and 
+        not st.session_state.get("chat_input_processed", False)):
         try:
 
             @st.dialog("소스 업로드", width="large")
             def _dlg():
                 _upload_dialog_body()
-                if st.button("닫기"):
+                if st.button("닫기", key="upload_dialog_close"):
                     st.session_state.show_upload = False
+                    st.rerun()
 
             _dlg()
         except Exception:
             with st.expander("소스 업로드", expanded=True):
                 _upload_dialog_body()
-                if st.button("닫기"):
+                if st.button("닫기", key="upload_expander_close"):
                     st.session_state.show_upload = False
+                    st.rerun()
 
 
 def _chat_body():
@@ -363,9 +405,20 @@ def _chat_body():
         )
         return
 
+    # Input 전에 다이얼로그 상태 확인 및 닫기
+    # chat_input이 실행되면 rerun이 발생하므로, 이전에 다이얼로그가 열려있으면 닫기
+    if "chat_input_processed" not in st.session_state:
+        st.session_state.chat_input_processed = False
+    
     # Input
     prompt = st.chat_input("메뉴얼에 대해 물어보세요…")
+    
+    # prompt가 있으면 다이얼로그 강제로 닫기
     if prompt:
+        st.session_state.show_upload = False
+        st.session_state.show_settings = False
+        st.session_state.chat_input_processed = True
+
         # 첫 번째 질문이면 제목 설정
         conv = st.session_state.conversations[st.session_state.active_chat]
         if len(conv) == 0:
@@ -386,11 +439,19 @@ def _chat_body():
         
         with st.chat_message("assistant"):
             with st.spinner("검색 중…"):
+                # 현재 대화의 이전 메시지들을 히스토리로 전달 (assistant 메시지만 제외)
+                conv_history = []
+                for msg in st.session_state.conversations[st.session_state.active_chat]:
+                    if msg["role"] == "user":
+                        conv_history.append({"role": "user", "content": msg["content"]})
+                    # assistant 메시지는 너무 길 수 있으므로 제외 (RAG 결과 포함)
+                
                 res = rag_answer(
                     prompt, 
                     top_k=5,
                     language=st.session_state.language,
-                    role=st.session_state.role
+                    role=st.session_state.role,
+                    conversation_history=conv_history
                 )
                 answer_text = res.get("answer", "")
                 citations = res.get("citations", [])
@@ -421,6 +482,9 @@ def _chat_body():
         st.session_state.conversations[st.session_state.active_chat].append(
             {"role": "assistant", "content": answer_text, "citations": citations, "images": res.get("images", [])}
         )
+        
+        # 답변 완료 후 플래그 리셋 (다음 rerun에서 다이얼로그가 정상적으로 작동하도록)
+        st.session_state.chat_input_processed = False
 
 
 # --- Layout ---

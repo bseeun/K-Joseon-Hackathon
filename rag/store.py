@@ -113,3 +113,30 @@ def save_embeddings(manual_id: str, emb: np.ndarray) -> None:
 def load_embeddings(manual_id: str) -> np.ndarray:
     paths = manual_paths(manual_id)
     return np.load(paths["emb"]).astype("float32")
+
+
+def delete_manual(manual_id: str) -> bool:
+    """
+    매뉴얼을 삭제합니다.
+    
+    Args:
+        manual_id: 삭제할 매뉴얼 ID
+    
+    Returns:
+        삭제 성공 여부
+    """
+    try:
+        # catalog에서 제거
+        catalog = load_catalog()
+        manuals = catalog.get("manuals", [])
+        catalog["manuals"] = [m for m in manuals if m.get("id") != manual_id]
+        save_catalog(catalog)
+        
+        # 폴더 삭제
+        paths = manual_paths(manual_id)
+        if os.path.exists(paths["base"]):
+            shutil.rmtree(paths["base"])
+        
+        return True
+    except Exception:
+        return False

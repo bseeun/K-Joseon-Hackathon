@@ -6,7 +6,7 @@ import pandas as pd
 import os
 import tempfile
 
-from rag.store import list_manuals, register_manual, update_meta_counts, save_chunks, save_embeddings, manual_paths
+from rag.store import list_manuals, register_manual, update_meta_counts, save_chunks, save_embeddings, manual_paths, delete_manual
 from rag.parser import pdf_parser
 from rag.embed import embed_texts
 from rag.index import build_faiss_ip_index, save_index
@@ -81,9 +81,9 @@ quiz_type_label = st.sidebar.selectbox(
 )
 st.session_state.quiz_type = "mcq" if quiz_type_label == "객관식" else "ordering"
 
-st.sidebar.subheader("문항 수 & 청크 선택")
+st.sidebar.subheader("문제 생성 설정")
 st.session_state.num_questions = st.sidebar.slider("문항 수", 1, 10, st.session_state.num_questions)
-sel_mode_label = st.sidebar.radio("청크 선택 방식", ["무작위", "주제 기반"], index=0 if st.session_state.selection_mode == "random" else 1, horizontal=True)
+sel_mode_label = st.sidebar.radio("문제 생성 방식", ["무작위", "주제 기반"], index=0 if st.session_state.selection_mode == "random" else 1, horizontal=True)
 st.session_state.selection_mode = "random" if sel_mode_label == "무작위" else "topic"
 if st.session_state.selection_mode == "topic":
     st.session_state.topic = st.sidebar.text_input("주제 입력 (예: 조수기 정지 절차)", value=st.session_state.topic)
@@ -101,7 +101,16 @@ def _upload_dialog_body():
     if manuals:
         st.markdown("#### 업로드된 매뉴얼")
         for m in manuals:
-            st.caption(f"- {m['title']} (id: {m['id']})")
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                st.caption(f"- {m['title']} (id: {m['id']})")
+            with col2:
+                if st.button("삭제", key=f"delete_manual_{m['id']}", help="매뉴얼 삭제"):
+                    if delete_manual(m['id']):
+                        st.success(f"'{m['title']}' 매뉴얼이 삭제되었습니다.")
+                        st.rerun()
+                    else:
+                        st.error("매뉴얼 삭제에 실패했습니다.")
     else:
         st.caption("아직 업로드된 매뉴얼이 없습니다.")
 
@@ -170,33 +179,53 @@ def _settings_dialog():
     """언어 및 직급 설정 다이얼로그"""
     st.subheader("설정")
     
-    languages = ["한국어", "영어", "중국어", "일본어"]
-    roles = ["3등 기관사", "2등 기관사", "1등 기관사", "기관장"]
+    # 언어 표시용과 내부 값 매핑
+    language_display = {
+        "한국어": "한국어",
+        "영어": "English",
+        "중국어": "中文",
+        "일본어": "日本語"
+    }
+    language_internal = {v: k for k, v in language_display.items()}  # 역매핑
     
-    language = st.selectbox(
+    languages_display = ["한국어", "English", "中文", "日本語"]
+    languages_internal = ["한국어", "영어", "중국어", "일본어"]
+    
+    # 현재 선택된 언어의 표시값 찾기
+    current_lang_display = language_display.get(st.session_state.language, "한국어")
+    current_index = languages_display.index(current_lang_display) if current_lang_display in languages_display else 0
+    
+    language_display_selected = st.selectbox(
         "언어 선택",
-        options=languages,
-        index=languages.index(st.session_state.language) if st.session_state.language in languages else 0,
-        key="settings_language"
+        options=languages_display,
+        index=current_index,
+        key="quiz_settings_language"
     )
+    
+    # 표시값을 내부값으로 변환
+    language = language_internal.get(language_display_selected, "한국어")
+    
+    roles = ["3등 기관사", "2등 기관사", "1등 기관사", "기관장"]
     
     role = st.selectbox(
         "직급 선택",
         options=roles,
         index=roles.index(st.session_state.role) if st.session_state.role in roles else 0,
-        key="settings_role"
+        key="quiz_settings_role"
     )
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("적용", type="primary", use_container_width=True):
+        if st.button("적용", type="primary", use_container_width=True, key="quiz_settings_apply"):
             st.session_state.language = language
             st.session_state.role = role
             st.session_state.show_settings = False
+            st.rerun()
     
     with col2:
-        if st.button("닫기", use_container_width=True):
+        if st.button("닫기", use_container_width=True, key="quiz_settings_close"):
             st.session_state.show_settings = False
+            st.rerun()
 
 
 # 상단 설정 버튼
@@ -229,14 +258,16 @@ if st.session_state.show_upload and not st.session_state.show_settings:
         @st.dialog("소스 업로드", width="large")
         def _dlg():
             _upload_dialog_body()
-            if st.button("닫기"):
+            if st.button("닫기", key="quiz_upload_dialog_close"):
                 st.session_state.show_upload = False
+                st.rerun()
         _dlg()
     except Exception:
         with st.expander("소스 업로드", expanded=True):
             _upload_dialog_body()
-            if st.button("닫기"):
+            if st.button("닫기", key="quiz_upload_expander_close"):
                 st.session_state.show_upload = False
+                st.rerun()
 
 col_left, col_main = st.columns([1, 3])
 with col_main:

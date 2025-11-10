@@ -9,7 +9,7 @@ from .embed import embed_query
 from .index import load_index, search as faiss_search
 from .store import list_manuals, load_chunks, manual_paths
 from .role_parser import get_role_info_for_prompt
-from .image_extractor import get_first_image_from_page
+from .image_extractor import get_first_image_from_page, get_image_by_bbox
 
 
 def _gather_candidates(query: str, top_k: int = 5) -> List[Dict[str, Any]]:
@@ -91,7 +91,7 @@ def _build_prompt(context: str, query: str, language: str = "한국어", role: O
     return "\n".join(prompt_parts)
 
 
-def answer(query: str, top_k: int = 5, language: str = "한국어", role: Optional[str] = None) -> Dict[str, Any]:
+def answer(query: str, top_k: int = 5, language: str = "한국어", role: Optional[str] = None, conversation_history: Optional[List[Dict[str, str]]] = None) -> Dict[str, Any]:
     # Guard: no manuals
     manuals = list_manuals()
     if not manuals:
@@ -110,13 +110,25 @@ def answer(query: str, top_k: int = 5, language: str = "한국어", role: Option
     context = _build_context(cands)
     prompt = _build_prompt(context, query, language=language, role=role)
 
+    # 대화 히스토리 구성
+    messages = [
+        {"role": "system", "content": "당신은 정확한 기술 매뉴얼 어시스턴트입니다. 이전 대화 맥락을 고려하여 답변하되, 항상 제공된 근거 문서를 기반으로 답변하세요."}
+    ]
+    
+    # 이전 대화 히스토리 추가 (최근 5턴만 유지)
+    if conversation_history:
+        # 최근 5턴만 사용 (너무 길어지면 토큰 초과)
+        recent_history = conversation_history[-10:] if len(conversation_history) > 10 else conversation_history
+        for msg in recent_history:
+            messages.append({"role": msg["role"], "content": msg["content"]})
+    
+    # 현재 질문 추가
+    messages.append({"role": "user", "content": prompt})
+
     client = OpenAI()
     resp = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "당신은 정확한 기술 매뉴얼 어시스턴트입니다."},
-            {"role": "user", "content": prompt},
-        ],
+        messages=messages,
         temperature=0.2,
         max_tokens=2000,
     )
@@ -143,7 +155,13 @@ def answer(query: str, top_k: int = 5, language: str = "한국어", role: Option
         if has_image and page_num and page_num != "?":
             try:
                 pdf_path = manual_paths(manual_id)["pdf"]
-                image_bytes = get_first_image_from_page(pdf_path, int(page_num))
+                # bbox 정보가 있으면 특정 위치의 이미지 추출, 없으면 첫 번째 이미지 추출
+                image_bbox = chunk.get("image_bbox")
+                if image_bbox:
+                    image_bytes = get_image_by_bbox(pdf_path, int(page_num), image_bbox)
+                else:
+                    image_bytes = get_first_image_from_page(pdf_path, int(page_num))
+                
                 if image_bytes:
                     images_data.append({
                         "title": chunk.get("header", ""),

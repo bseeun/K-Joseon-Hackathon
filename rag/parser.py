@@ -88,6 +88,15 @@ def pdf_parser(pdf_path: str) -> List[Dict[str, Any]]:
                         current_chunk.setdefault("content", []).append(elem["data"])
                         if etype == "image":
                             current_chunk["has_image"] = True
+                            # 이미지 bbox 정보 저장 (JSON 직렬화 가능하도록 딕셔너리로 변환)
+                            bbox = elem.get("bbox")
+                            if bbox:
+                                current_chunk["image_bbox"] = {
+                                    "x0": float(bbox.x0),
+                                    "y0": float(bbox.y0),
+                                    "x1": float(bbox.x1),
+                                    "y1": float(bbox.y1)
+                                }
                     elif not final_chunks:
                         current_chunk = {
                             "header": "Initial Content",
@@ -96,10 +105,27 @@ def pdf_parser(pdf_path: str) -> List[Dict[str, Any]]:
                             "type": "section",
                             "has_image": etype == "image",
                         }
+                        if etype == "image":
+                            bbox = elem.get("bbox")
+                            if bbox:
+                                current_chunk["image_bbox"] = {
+                                    "x0": float(bbox.x0),
+                                    "y0": float(bbox.y0),
+                                    "x1": float(bbox.x1),
+                                    "y1": float(bbox.y1)
+                                }
                     else:
                         final_chunks[-1].setdefault("content", []).insert(0, elem["data"])
                         if etype == "image":
                             final_chunks[-1]["has_image"] = True
+                            bbox = elem.get("bbox")
+                            if bbox:
+                                final_chunks[-1]["image_bbox"] = {
+                                    "x0": float(bbox.x0),
+                                    "y0": float(bbox.y0),
+                                    "x1": float(bbox.x1),
+                                    "y1": float(bbox.y1)
+                                }
                     continue
 
                 # Text blocks

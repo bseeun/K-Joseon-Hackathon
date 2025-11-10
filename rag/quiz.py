@@ -61,8 +61,8 @@ def _get_language_instruction(language: str) -> str:
 
 
 def generate_quiz(
-    manual_id: str,
-    num_questions: int = 5,
+    manual_id: str, 
+    num_questions: int = 5, 
     language: str = "한국어",
     role: Optional[str] = None,
     quiz_type: Literal["mcq", "ordering"] = "mcq",
@@ -81,35 +81,40 @@ def generate_quiz(
     lang_instruction = _get_language_instruction(language)
     role_info = get_role_info_for_prompt(role) if role else ""
 
+    prompt_parts: List[str] = []
     if quiz_type == "ordering":
-        prompt_parts = [
+        prompt_parts.append(
             f"아래 선박 매뉴얼 내용을 바탕으로 절차/프로세스의 올바른 순서를 묻는 순서 맞추기 퀴즈를 {lang_instruction} 만들어주세요."
-        ]
+        )
     else:
-        prompt_parts = [
+        prompt_parts.append(
             f"아래 선박 매뉴얼 내용을 바탕으로 객관식 퀴즈를 {lang_instruction} 만들어주세요."
-        ]
+        )
     
     if role_info:
         prompt_parts.append(role_info)
         prompt_parts.append(f"퀴즈 문제는 위 직급 정보를 고려하여 해당 직급에 적합한 수준의 난이도와 내용으로 출제하세요.")
     
     if quiz_type == "ordering":
-        prompt_parts.extend([
-            "출력 형식은 JSON 배열이며 각 원소는 다음 키를 가집니다: \n",
-            "{type: 'ordering', question: str, items_shuffled: [str, ...], correct_order: [str, ...], explanation: str, citation: {title: str, page: int}}\n",
-            f"[자료]\n{ctx}\n",
-            f"문항 수: {num_questions}\n",
-            "요구 사항: 자료에서 실제 절차를 추출해 'correct_order'에 올바른 순서로 넣고, 'items_shuffled'는 동일 항목을 무작위로 섞어 제시하세요. 항목 수는 4~7개. explanation에 핵심 근거를 간단히 작성."
-        ])
+        prompt_parts.extend(
+            [
+                "출력 형식은 JSON 배열이며 각 원소는 다음 키를 가집니다: \n",
+                "{type: 'ordering', question: str, items_shuffled: [str, ...], correct_order: [str, ...], explanation: str, citation: {title: str, page: int}}\n",
+                f"[자료]\n{ctx}\n",
+                f"문항 수: {num_questions}\n",
+                "요구 사항: 자료에서 실제 절차를 추출해 'correct_order'에 올바른 순서로 넣고, 'items_shuffled'는 동일 항목을 무작위로 섞어 제시하세요. 항목 수는 4~7개. explanation에 핵심 근거를 간단히 작성.",
+            ]
+        )
     else:
-        prompt_parts.extend([
-            "출력 형식은 JSON 배열이며 각 원소는 다음 키를 가집니다: \n",
-            "{type: 'mcq', question: str, options: [str,str,str,str], answer_index: int, explanation: str, citation: {title: str, page: int}}\n",
-            f"[자료]\n{ctx}\n",
-            f"문항 수: {num_questions}\n",
-            "각 문항은 정답이 되는 이유를 explanation에 2~3문장으로 간단히 설명하세요."
-        ])
+        prompt_parts.extend(
+            [
+                "출력 형식은 JSON 배열이며 각 원소는 다음 키를 가집니다: \n",
+                "{type: 'mcq', question: str, options: [str,str,str,str], answer_index: int, explanation: str, citation: {title: str, page: int}}\n",
+                f"[자료]\n{ctx}\n",
+                f"문항 수: {num_questions}\n",
+                "각 문항은 정답이 되는 이유를 explanation에 2~3문장으로 간단히 설명하세요.",
+            ]
+        )
     
     prompt = "\n".join(prompt_parts)
 
@@ -156,28 +161,34 @@ def generate_quiz(
             chunk_prompt_parts = [
                 f"아래 선박 매뉴얼 내용을 바탕으로 객관식 퀴즈를 {lang_instruction} 만들어주세요."
             ]
-        
+
         if role_info:
             chunk_prompt_parts.append(role_info)
-            chunk_prompt_parts.append(f"퀴즈 문제는 위 직급 정보를 고려하여 해당 직급에 적합한 수준의 난이도와 내용으로 출제하세요.")
-        
+            chunk_prompt_parts.append(
+                "퀴즈 문제는 위 직급 정보를 고려하여 해당 직급에 적합한 수준의 난이도와 내용으로 출제하세요."
+            )
+
         if quiz_type == "ordering":
-            chunk_prompt_parts.extend([
-                "출력 형식은 JSON 객체이며 다음 키를 가집니다: \n",
-                "{type: 'ordering', question: str, items_shuffled: [str, ...], correct_order: [str, ...], explanation: str}\n",
-                f"[자료]\n제목: {header}\n내용: {content[:800]}\n",
-                "실제 절차 항목을 4~7개로 작성하세요. items_shuffled는 correct_order의 동일 항목을 무작위 순서로 제시하세요."
-            ])
+            chunk_prompt_parts.extend(
+                [
+                    "출력 형식은 JSON 객체이며 다음 키를 가집니다: \n",
+                    "{type: 'ordering', question: str, items_shuffled: [str, ...], correct_order: [str, ...], explanation: str}\n",
+                    f"[자료]\n제목: {header}\n내용: {content[:800]}\n",
+                    "실제 절차 항목을 4~7개로 작성하세요. items_shuffled는 correct_order의 동일 항목을 무작위 순서로 제시하세요.",
+                ]
+            )
         else:
-            chunk_prompt_parts.extend([
-                "출력 형식은 JSON 객체이며 다음 키를 가집니다: \n",
-                "{type: 'mcq', question: str, options: [str,str,str,str], answer_index: int, explanation: str}\n",
-                f"[자료]\n제목: {header}\n내용: {content[:500]}\n",
-                "하나의 객관식 문제만 생성하세요. answer_index는 0부터 3 사이의 정수입니다. explanation에 정답이 되는 이유를 1~2문장으로 설명."
-            ])
-        
+            chunk_prompt_parts.extend(
+                [
+                    "출력 형식은 JSON 객체이며 다음 키를 가집니다: \n",
+                    "{type: 'mcq', question: str, options: [str,str,str,str], answer_index: int, explanation: str}\n",
+                    f"[자료]\n제목: {header}\n내용: {content[:500]}\n",
+                    "하나의 객관식 문제만 생성하세요. answer_index는 0부터 3 사이의 정수입니다. explanation에 정답이 되는 이유를 1~2문장으로 설명하세요.",
+                ]
+            )
+
         chunk_prompt = "\n".join(chunk_prompt_parts)
-        
+
         # LLM으로 퀴즈 생성 시도 (최대 2번 시도)
         success = False
         for attempt in range(2):
@@ -185,44 +196,57 @@ def generate_quiz(
                 chunk_resp = client.chat.completions.create(
                     model="gpt-4o-mini",
                     messages=[
-                        {"role": "system", "content": "당신은 정확한 시험 문제 출제자입니다. 반드시 JSON 형식으로만 응답하세요."},
-                        {"role": "user", "content": chunk_prompt if attempt == 0 else f"{chunk_prompt}\n\n중요: 반드시 유효한 JSON 형식으로만 응답하세요. 예시: {{\"question\": \"...\", \"options\": [\"...\", \"...\", \"...\", \"...\"], \"answer_index\": 0}}"},
+                        {
+                            "role": "system",
+                            "content": "당신은 정확한 시험 문제 출제자입니다. 반드시 JSON 형식으로만 응답하세요.",
+                        },
+                        {
+                            "role": "user",
+                            "content": chunk_prompt
+                            if attempt == 0
+                            else f"{chunk_prompt}\n\n중요: 반드시 유효한 JSON 형식으로만 응답하세요. 예시: {{\"question\": \"...\", \"options\": [\"...\", \"...\", \"...\", \"...\"], \"answer_index\": 0}}",
+                        },
                     ],
                     temperature=0.2,
                     max_tokens=800,
                 )
                 chunk_text = chunk_resp.choices[0].message.content or "{}"
-                
-                # JSON 파싱 시도
-                try:
-                    # JSON 코드 블록 제거 시도
-                    import re
-                    json_match = re.search(r'\{[\s\S]*\}', chunk_text, re.DOTALL)
-                    if json_match:
-                        chunk_text = json_match.group(0)
-                    
-                    chunk_data = json.loads(chunk_text)
-                    if quiz_type == "ordering":
-                        if isinstance(chunk_data, dict) and "items_shuffled" in chunk_data and "correct_order" in chunk_data:
-                            chunk_data["citation"] = {"title": header, "page": page}
-                            qs.append(chunk_data)
-                            success = True
-                            break
-                    else:
-                        if isinstance(chunk_data, dict) and "question" in chunk_data and "options" in chunk_data:
-                            if isinstance(chunk_data["options"], list) and len(chunk_data["options"]) == 4:
-                                ans_idx = chunk_data.get("answer_index", 0)
-                                if isinstance(ans_idx, int) and 0 <= ans_idx < 4:
-                                    chunk_data.setdefault("explanation", "")
-                                    chunk_data["citation"] = {"title": header, "page": page}
-                                    qs.append(chunk_data)
-                                    success = True
-                                    break
-                except Exception:
-                    continue
+
+                import re
+
+                json_match = re.search(r"\{[\s\S]*\}", chunk_text, re.DOTALL)
+                if json_match:
+                    chunk_text = json_match.group(0)
+
+                chunk_data = json.loads(chunk_text)
+                if quiz_type == "ordering":
+                    if (
+                        isinstance(chunk_data, dict)
+                        and "items_shuffled" in chunk_data
+                        and "correct_order" in chunk_data
+                    ):
+                        chunk_data["citation"] = {"title": header, "page": page}
+                        qs.append(chunk_data)
+                        success = True
+                        break
+                else:
+                    if (
+                        isinstance(chunk_data, dict)
+                        and "question" in chunk_data
+                        and "options" in chunk_data
+                    ):
+                        options = chunk_data.get("options")
+                        if isinstance(options, list) and len(options) == 4:
+                            ans_idx = chunk_data.get("answer_index", 0)
+                            if isinstance(ans_idx, int) and 0 <= ans_idx < 4:
+                                chunk_data.setdefault("explanation", "")
+                                chunk_data["citation"] = {"title": header, "page": page}
+                                qs.append(chunk_data)
+                                success = True
+                                break
             except Exception:
                 continue
-        
+
         # LLM 호출이 모두 실패한 경우, 더 간단한 프롬프트로 최종 시도
         if not success:
             try:
@@ -240,7 +264,7 @@ def generate_quiz(
                         f"내용: {content[:300]}\n\n"
                         "JSON 형식으로 응답: {\"type\": \"mcq\", \"question\": \"질문\", \"options\": [\"선택지1\", \"선택지2\", \"선택지3\", \"선택지4\"], \"answer_index\": 0, \"explanation\": \"이유\"}"
                     )
-                
+
                 final_resp = client.chat.completions.create(
                     model="gpt-4o-mini",
                     messages=[
@@ -251,29 +275,38 @@ def generate_quiz(
                     max_tokens=600,
                 )
                 final_text = final_resp.choices[0].message.content or "{}"
-                
-                # JSON 추출 및 파싱
+
                 import re
-                json_match = re.search(r'\{[\s\S]*\}', final_text, re.DOTALL)
+
+                json_match = re.search(r"\{[\s\S]*\}", final_text, re.DOTALL)
                 if json_match:
                     final_text = json_match.group(0)
-                
+
                 final_data = json.loads(final_text)
                 if quiz_type == "ordering":
-                    if isinstance(final_data, dict) and "items_shuffled" in final_data and "correct_order" in final_data:
+                    if (
+                        isinstance(final_data, dict)
+                        and "items_shuffled" in final_data
+                        and "correct_order" in final_data
+                    ):
                         final_data["citation"] = {"title": header, "page": page}
                         qs.append(final_data)
                         continue
                 else:
-                    if isinstance(final_data, dict) and "question" in final_data and "options" in final_data:
-                        if isinstance(final_data["options"], list) and len(final_data["options"]) == 4:
+                    if (
+                        isinstance(final_data, dict)
+                        and "question" in final_data
+                        and "options" in final_data
+                    ):
+                        options = final_data.get("options")
+                        if isinstance(options, list) and len(options) == 4:
                             final_data.setdefault("explanation", "")
                             final_data["citation"] = {"title": header, "page": page}
                             qs.append(final_data)
                             continue
             except Exception:
                 pass
-            
+
             # 모든 시도가 실패한 경우 (매우 드묾), 스킵
             continue
     
